@@ -9,6 +9,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.dromanryuk.notes.feature_note.data.dao.NoteDao
 import ru.dromanryuk.notes.feature_note.data.db.NoteDatabase
+import ru.dromanryuk.notes.feature_note.data.repository.NoteRepositoryImpl
+import ru.dromanryuk.notes.feature_note.domain.repository.NoteRepository
 import javax.inject.Singleton
 
 @Module
@@ -28,5 +30,10 @@ object NoteDataModel {
     @Provides
     fun provideNoteDao(db: NoteDatabase) : NoteDao {
         return db.noteDao()
+    }
+
+    @Provides
+    fun provideNoteRepository(repository: NoteRepositoryImpl): NoteRepository {
+        return repository
     }
 }
