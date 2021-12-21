@@ -1,4 +1,4 @@
-package ru.dromanryuk.notes.ui.theme.attr
+package ru.dromanryuk.notes.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
