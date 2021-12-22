@@ -9,12 +9,12 @@ data class NoteChecklistEntity(
     @Embedded
     val note: NoteModel,
     @Relation(parentColumn = "id", entityColumn = "noteId")
-    val checkboxes: List<NoteCheckboxModel>
+    val checkboxes: List<NoteCheckboxModel>?
 )
 
 fun NoteChecklistEntity.toNote() = Note(
     id = note.id,
-    content = NoteContent.ChecklistNote(checkboxes.map { it.toCheckbox() }),
+    content = NoteContent.ChecklistNote(checkboxes!!.map { it.toCheckbox() }),
     name = note.name,
     isFavourite = note.isFavourite,
     password = Password.NonePassword,

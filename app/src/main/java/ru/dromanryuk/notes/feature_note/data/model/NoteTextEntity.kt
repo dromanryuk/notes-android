@@ -12,12 +12,12 @@ data class NoteTextEntity(
     @Embedded
     val note: NoteModel,
     @Relation(parentColumn = "id", entityColumn = "noteId")
-    val content: NoteTextModel
+    val content: NoteTextModel?
 )
 
 fun NoteTextEntity.toNote() = Note(
     id = note.id,
-    content = NoteContent.TextNote(content.text),
+    content = NoteContent.TextNote(content!!.text),
     name = note.name,
     isFavourite = note.isFavourite,
     password = Password.NonePassword,

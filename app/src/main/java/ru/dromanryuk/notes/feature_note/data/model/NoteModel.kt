@@ -8,7 +8,7 @@ import ru.dromanryuk.notes.feature_note.domain.model.Password
 @Entity
 data class NoteModel(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
     val name: String,
     val isFavourite: Boolean,
     val password: String?,
