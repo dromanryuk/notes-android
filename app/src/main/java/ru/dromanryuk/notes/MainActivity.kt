@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import ru.dromanryuk.notes.feature_note.presentation.note.NoteScreen
 import ru.dromanryuk.notes.feature_note.presentation.overview.OverviewScreen
@@ -36,7 +38,13 @@ class MainActivity : ComponentActivity() {
             navController = navController,
             startDestination = Screen.Overview.route,
         ) {
-
+            composable(Screen.Overview.route) {
+                OverviewScreen(
+                    onNoteClick = { id ->
+                        navController.navigate(Screen.Note.route + "/${id}")
+                    }
+                )
+            }
         }
     }
 }
