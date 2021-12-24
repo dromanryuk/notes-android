@@ -45,6 +45,14 @@ class MainActivity : ComponentActivity() {
                     }
                 )
             }
+            composable(
+                route = Screen.Note.route + "/{noteId}",
+                arguments = listOf(navArgument("noteId") { type = NavType.IntType })
+            ) {
+                val noteId = it.arguments?.getInt("noteId")
+                    ?: error("noteId argument is not passed")
+                NoteScreen { navController.navigate(Screen.Overview.route) }
+            }
         }
     }
 }
