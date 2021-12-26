@@ -1,9 +1,6 @@
 package ru.dromanryuk.notes.feature_note.data.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 import ru.dromanryuk.notes.feature_note.data.model.*
 
@@ -21,6 +18,12 @@ interface NoteDao {
 
     @Update
     fun updateNote(note: NoteModel)
+
+    @Query("delete from NoteModel where id = :noteId")
+    suspend fun deleteNote(noteId: Int)
+
+    @Query("delete from NoteTextModel where noteId = :noteId")
+    suspend fun deleteNoteTextContent(noteId: Int)
 
     @Update
     fun updateNoteTextContent(textContent: NoteTextModel)

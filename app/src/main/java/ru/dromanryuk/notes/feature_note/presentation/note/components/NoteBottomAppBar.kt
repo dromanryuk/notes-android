@@ -15,12 +15,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import ru.dromanryuk.notes.feature_note.presentation.components.DefaultIconButton
 import ru.dromanryuk.notes.ui.theme.NotesTheme
 
 @ExperimentalMaterialApi
 @Composable
-fun NoteBottomAppBar() {
+fun NoteBottomAppBar(
+    state: ModalBottomSheetState,
+    scope: CoroutineScope
+) {
     BottomAppBar(
         backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp
@@ -51,7 +56,11 @@ fun NoteBottomAppBar() {
             DefaultIconButton(
                 image = Icons.Default.MoreVert,
                 color = MaterialTheme.colors.surface
-            ) { }
+            ) {
+                scope.launch {
+                    state.show()
+                }
+            }
         }
     }
 }
@@ -61,6 +70,5 @@ fun NoteBottomAppBar() {
 @Composable
 private fun OverviewTopAppBarPreview() {
     NotesTheme {
-        NoteBottomAppBar()
     }
 }

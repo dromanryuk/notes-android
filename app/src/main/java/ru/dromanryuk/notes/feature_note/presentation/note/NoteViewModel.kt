@@ -52,15 +52,38 @@ class NoteViewModel @Inject constructor(
                 is NoteContentState.Checklist -> {
                 }
             }
-            is NoteEditingEvent.AdditionalActions -> {
+            is NoteEditingEvent.AdditionalActions ->
+                when(event.action) {
+                ModalBottomSheetAction.AddPassword -> {}
+                ModalBottomSheetAction.CopyNote -> {}
+                ModalBottomSheetAction.DeleteNote -> removeNote()
+                ModalBottomSheetAction.ShareNote -> {}
             }
-            NoteEditingEvent.ExitScreen -> onExitScreen()
+            NoteEditingEvent.ExitScreen -> {
+                if (checkNoteFilling()) {
+                    removeNote()
+                } else {
+                    sendSaveEditingEvent()
+                    onExitScreen()
+                }
+            }
             NoteEditingEvent.SaveEditing -> onSaveEditing(_state.value)
             NoteEditingEvent.ToggleFavourite -> {
             }
             NoteEditingEvent.SetReminder -> {
             }
         }
+    }
+
+    private fun checkNoteFilling(): Boolean {
+        return (_state.value.titleState.isEmpty()
+                && _state.value.contentState.text.isNullOrEmpty()
+                && _state.value.contentState.checklist.isNullOrEmpty())
+    }
+
+    private fun removeNote() = viewModelScope.launch {
+        onExitScreen()
+        noteUseCases.removeNoteUseCase(noteId)
     }
 
     private fun changeTitle(title: String) = viewModelScope.launch {
@@ -99,7 +122,6 @@ class NoteViewModel @Inject constructor(
     }
 
     private fun onExitScreen() {
-        sendSaveEditingEvent()
         _state.update { it.copy(isExitFromScreen = true) }
     }
 

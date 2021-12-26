@@ -2,12 +2,15 @@ package ru.dromanryuk.notes.feature_note.presentation.note
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.dromanryuk.notes.feature_note.presentation.components.DefaultScaffold
+import ru.dromanryuk.notes.feature_note.presentation.note.components.BottomSheetContent
 import ru.dromanryuk.notes.feature_note.presentation.note.components.NoteBottomAppBar
 import ru.dromanryuk.notes.feature_note.presentation.note.components.NoteScreenContent
 import ru.dromanryuk.notes.feature_note.presentation.note.components.NoteTopAppBar
@@ -23,10 +26,19 @@ fun NoteScreen(
     val state by viewModel.state.collectAsState()
     val sendEvent = viewModel::sendEvent
 
-    DefaultScaffold(
+    val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val scope = rememberCoroutineScope()
+    ModalBottomSheetLayout(
+        sheetContent = {
+            BottomSheetContent { sendEvent(NoteEditingEvent.AdditionalActions(it)) }
+        },
+        sheetState = modalBottomSheetState,
+        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+    ) {
+        DefaultScaffold(
             modifier = Modifier.background(MaterialTheme.colors.background),
             topBar = { NoteTopAppBar { sendEvent(NoteEditingEvent.ExitScreen) } },
-            bottomBar = { NoteBottomAppBar() },
+            bottomBar = { NoteBottomAppBar(modalBottomSheetState, scope) },
             content = {
                 NoteScreenContent(
                     state = state,
@@ -42,6 +54,7 @@ fun NoteScreen(
             if (state.isExitFromScreen)
                 navigateBack()
         }
+    }
 }
 
 @ExperimentalMaterialApi
