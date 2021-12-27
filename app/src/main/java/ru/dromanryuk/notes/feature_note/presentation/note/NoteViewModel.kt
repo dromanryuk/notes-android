@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import ru.dromanryuk.notes.core.UiComponentVisibility
 import ru.dromanryuk.notes.feature_note.domain.model.NoteContent
 import ru.dromanryuk.notes.feature_note.domain.use_case.UpdateNoteUseCase
 import ru.dromanryuk.notes.feature_note.presentation.note.model.*
@@ -57,8 +58,14 @@ class NoteViewModel @Inject constructor(
                 ModalBottomSheetAction.AddPassword -> {}
                 ModalBottomSheetAction.CopyNote -> {}
                 ModalBottomSheetAction.DeleteNote -> removeNote()
-                ModalBottomSheetAction.ShareNote -> {}
+                ModalBottomSheetAction.ShareNote -> {
+                    sendUpdateShareDialogVisibility()
+                }
             }
+            is NoteEditingEvent.UpdateShareDialogVisibility -> {
+                _state.update { it.copy(shareDialogVisibility = event.visibility) }
+            }
+            is NoteEditingEvent.ShareTypeChanged -> { }
             NoteEditingEvent.ExitScreen -> {
                 if (checkNoteFilling()) {
                     removeNote()
@@ -73,6 +80,10 @@ class NoteViewModel @Inject constructor(
             NoteEditingEvent.SetReminder -> {
             }
         }
+    }
+
+    private fun sendUpdateShareDialogVisibility() {
+        sendEvent(NoteEditingEvent.UpdateShareDialogVisibility(UiComponentVisibility.Show))
     }
 
     private fun checkNoteFilling(): Boolean {
