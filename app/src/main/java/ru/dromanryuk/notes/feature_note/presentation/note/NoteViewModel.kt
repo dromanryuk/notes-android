@@ -1,5 +1,6 @@
 package ru.dromanryuk.notes.feature_note.presentation.note
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.dromanryuk.notes.core.UiComponentVisibility
 import ru.dromanryuk.notes.feature_note.domain.model.NoteContent
+import ru.dromanryuk.notes.feature_note.domain.model.toText
 import ru.dromanryuk.notes.feature_note.domain.use_case.UpdateNoteUseCase
 import ru.dromanryuk.notes.feature_note.presentation.note.model.*
 import javax.inject.Inject
@@ -65,7 +67,7 @@ class NoteViewModel @Inject constructor(
             is NoteEditingEvent.UpdateShareDialogVisibility -> {
                 _state.update { it.copy(shareDialogVisibility = event.visibility) }
             }
-            is NoteEditingEvent.ShareTypeChanged -> { }
+            is NoteEditingEvent.ShareTypeChanged -> shareNote(event.shareType, event.context)
             NoteEditingEvent.ExitScreen -> {
                 if (checkNoteFilling()) {
                     removeNote()
@@ -80,6 +82,15 @@ class NoteViewModel @Inject constructor(
             NoteEditingEvent.SetReminder -> {
             }
         }
+    }
+
+    private fun shareNote(sortingType: NoteShareType, context: Context) {
+        val content = when (_state.value.contentState) {
+            is NoteContentState.Text -> _state.value.contentState.toNoteTextContent().text
+            is NoteContentState.Checklist -> _state.value.contentState.toNoteChecklistContent().toText()
+        }
+        val title = _state.value.titleState
+        noteUseCases.shareNoteUseCase(sortingType, content, title, context)
     }
 
     private fun sendUpdateShareDialogVisibility() {
