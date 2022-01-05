@@ -30,21 +30,22 @@ class NoteViewModel @Inject constructor(
     }
 
     private fun observeNote() {
-        viewModelScope.launch {
-            val note = noteUseCases.observeNoteUseCase(noteId)!!
-            _state.update {
-                it.copy(
-                    titleState = note.name,
-                    contentState = when (note.content) {
-                        is NoteContent.TextNote -> NoteContentState.Text(text = note.content.text)
-                        is NoteContent.ChecklistNote -> NoteContentState.Checklist(checklist = note.content.checkboxes)
-                    },
-                    favouriteState = note.isFavourite,
-                    editingDateTime = note.metadata.editingDateTime.toString(),
-                    isExitFromScreen = false
-                )
+        noteUseCases.observeNoteUseCase(noteId)
+            .onEach { note ->
+                _state.update {
+                    it.copy(
+                        titleState = note!!.name,
+                        contentState = when (note.content) {
+                            is NoteContent.TextNote -> NoteContentState.Text(text = note.content.text)
+                            is NoteContent.ChecklistNote -> NoteContentState.Checklist(checklist = note.content.checkboxes)
+                        },
+                        favouriteState = note.isFavourite,
+                        editingDateTime = note.metadata.editingDateTime.toString(),
+                        isExitFromScreen = false
+                    )
+                }
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     fun sendEvent(event: NoteEditingEvent) {

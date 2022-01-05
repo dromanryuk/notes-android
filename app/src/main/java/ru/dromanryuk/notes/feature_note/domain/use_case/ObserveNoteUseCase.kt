@@ -8,7 +8,5 @@ import ru.dromanryuk.notes.feature_note.domain.repository.NoteRepository
 class ObserveNoteUseCase(
     private val noteRepository: NoteRepository
 ) {
-    suspend operator fun invoke(id: Int): Note? {
-        return noteRepository.getById(id)
-    }
+    operator fun invoke(id: Int): Flow<Note?> = noteRepository.observeById(id)
 }

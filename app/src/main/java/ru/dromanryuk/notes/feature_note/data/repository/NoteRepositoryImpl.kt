@@ -36,10 +36,10 @@ class NoteRepositoryImpl @Inject constructor(
         noteDao.observeById(id).map {
             when {
                 getTextContentById(it.id) != null -> {
-                    getTextContentById(it.id)?.toNote()
+                    getTextContentById(it.id)!!.toNote()
                 }
                 getChecklistContentById(it.id) != null -> {
-                    getChecklistContentById(it.id)?.toNote()
+                    getChecklistContentById(it.id)!!.toNote()
                 }
                 else -> {
                     null
@@ -84,6 +84,11 @@ class NoteRepositoryImpl @Inject constructor(
 
     override suspend fun updateNote(note: Note) = withContext(Dispatchers.IO) {
         noteDao.updateNote(note.toNoteModel())
+    }
+
+    override suspend fun remove(noteId: Int) {
+        noteDao.deleteNote(noteId)
+        noteDao.deleteNoteTextContent(noteId)
     }
 
     override suspend fun updateNoteTextContent(noteId: Int, noteTextContent: String) =
