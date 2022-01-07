@@ -6,17 +6,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.dromanryuk.notes.core.UiComponentVisibility
+import ru.dromanryuk.notes.feature_note.domain.model.toText
 import ru.dromanryuk.notes.feature_note.presentation.components.DefaultScaffold
 import ru.dromanryuk.notes.feature_note.presentation.note.components.*
-import ru.dromanryuk.notes.feature_note.presentation.note.model.NoteEditingEvent
-import ru.dromanryuk.notes.feature_note.presentation.note.model.NoteState
+import ru.dromanryuk.notes.feature_note.presentation.note.model.*
 import ru.dromanryuk.notes.ui.theme.NotesTheme
 
 @ExperimentalMaterialApi
@@ -41,7 +40,13 @@ fun NoteScreen(
     ) {
         DefaultScaffold(
             modifier = Modifier.background(MaterialTheme.colors.background),
-            topBar = { NoteTopAppBar { sendEvent(NoteEditingEvent.ExitScreen) } },
+            topBar = {
+                NoteTopAppBar(
+                    favouriteState = state.favouriteState,
+                    onNavigateBack = { sendEvent(NoteEditingEvent.ExitScreen) },
+                    onToggleFavourite = { sendEvent(NoteEditingEvent.ToggleFavourite) }
+                )
+            },
             bottomBar = { NoteBottomAppBar(modalBottomSheetState, scope) },
             content = {
                 NoteScreenContent(
@@ -49,7 +54,7 @@ fun NoteScreen(
                     onTitleChange = { sendEvent(NoteEditingEvent.OnTitleChanged(it)) },
                     onContentChange = { sendEvent(NoteEditingEvent.OnContentChanged(it)) }
                 )
-                ShareDialogWrapper(state, sendEvent, modalBottomSheetState, scope)
+                ShareDialogWrapper(state, sendEvent, modalBottomSheetState, scope, viewModel)
             }
         ) {
 
@@ -69,21 +74,24 @@ private fun ShareDialogWrapper(
     sendEvent: (NoteEditingEvent) -> Unit,
     sheetState: ModalBottomSheetState,
     scope: CoroutineScope,
+    viewModel: NoteViewModel,
 ) {
-    val context = LocalContext.current
     if (state.shareDialogVisibility == UiComponentVisibility.Show) {
         ShareDialog(
+            content = when (state.contentState) {
+                is NoteContentState.Text -> state.contentState.toNoteTextContent().text
+                is NoteContentState.Checklist -> state.contentState.toNoteChecklistContent()
+                    .toText()
+            },
             onDismiss = {
                 sendEvent(NoteEditingEvent.UpdateShareDialogVisibility(UiComponentVisibility.Hide))
-            },
-            onChangeShareType = {
-                sendEvent(NoteEditingEvent.ShareTypeChanged(it, context))
             },
             hideBottomSheet = {
                 scope.launch {
                     sheetState.hide()
                 }
-            }
+            },
+            uri = viewModel.getShareFile()
         )
     }
 }

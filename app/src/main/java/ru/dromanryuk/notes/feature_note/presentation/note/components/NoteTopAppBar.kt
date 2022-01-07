@@ -7,8 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.NotificationAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,7 +18,11 @@ import ru.dromanryuk.notes.feature_note.presentation.components.DefaultIconButto
 import ru.dromanryuk.notes.ui.theme.NotesTheme
 
 @Composable
-fun NoteTopAppBar(onNavigateBack: () -> Unit) {
+fun NoteTopAppBar(
+    favouriteState: Boolean,
+    onNavigateBack: () -> Unit,
+    onToggleFavourite: () -> Unit
+) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp
@@ -36,10 +39,7 @@ fun NoteTopAppBar(onNavigateBack: () -> Unit) {
                 color = MaterialTheme.colors.surface
             ) { onNavigateBack() }
             Row {
-                DefaultIconButton(
-                    image = Icons.Outlined.BookmarkBorder,
-                    color = MaterialTheme.colors.surface
-                ) {  }
+                FavouriteIcon(favouriteState) { onToggleFavourite() }
                 DefaultIconButton(
                     image = Icons.Outlined.NotificationAdd,
                     color = MaterialTheme.colors.surface
@@ -49,10 +49,19 @@ fun NoteTopAppBar(onNavigateBack: () -> Unit) {
     }
 }
 
+@Composable
+private fun FavouriteIcon(isFavourite: Boolean, onToggleFavourite: () -> Unit) {
+    val icon = Icons.Default.run { if (isFavourite) BookmarkAdded else BookmarkBorder }
+    DefaultIconButton(
+        image = icon,
+        color = MaterialTheme.colors.surface
+    ) { onToggleFavourite() }
+}
+
 @Preview
 @Composable
 private fun OverviewTopAppBarPreview() {
     NotesTheme {
-        NoteTopAppBar {}
+        NoteTopAppBar(false, {}, {})
     }
 }
