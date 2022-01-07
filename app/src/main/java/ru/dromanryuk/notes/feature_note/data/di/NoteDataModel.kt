@@ -48,6 +48,11 @@ object NoteDataModel {
         return repository
     }
 
+    @Provides
+    fun provideAppContext(@ApplicationContext appContext: Context) : Context {
+        return appContext
+    }
+
     @Singleton
     @Provides
     fun provideNoteShareRepository(repository: NoteShareRepositoryImpl): NoteShareRepository {

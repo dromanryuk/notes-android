@@ -1,11 +1,7 @@
 package ru.dromanryuk.notes.feature_note.domain.repository
 
-import android.content.Context
+import android.net.Uri
 
 interface NoteShareRepository {
-
-    fun shareTextCopy(content: String, context: Context)
-
-    fun sharePdfFile(content: String, title: String, context: Context)
-
+    fun createShareFile(content: String, title: String): Uri
 }

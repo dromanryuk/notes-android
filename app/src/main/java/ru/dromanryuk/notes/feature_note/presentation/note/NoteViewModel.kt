@@ -1,6 +1,6 @@
 package ru.dromanryuk.notes.feature_note.presentation.note
 
-import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -68,7 +68,6 @@ class NoteViewModel @Inject constructor(
             is NoteEditingEvent.UpdateShareDialogVisibility -> {
                 _state.update { it.copy(shareDialogVisibility = event.visibility) }
             }
-            is NoteEditingEvent.ShareTypeChanged -> shareNote(event.shareType, event.context)
             NoteEditingEvent.ExitScreen -> {
                 if (checkNoteFilling()) {
                     removeNote()
@@ -78,20 +77,24 @@ class NoteViewModel @Inject constructor(
                 }
             }
             NoteEditingEvent.SaveEditing -> onSaveEditing(_state.value)
-            NoteEditingEvent.ToggleFavourite -> {
-            }
+            NoteEditingEvent.ToggleFavourite -> changeFavourite()
             NoteEditingEvent.SetReminder -> {
             }
         }
     }
 
-    private fun shareNote(sortingType: NoteShareType, context: Context) {
+    private fun changeFavourite() = viewModelScope.launch {
+        noteUseCases.toggleFavourite(noteId)
+    }
+
+    fun getShareFile(): Uri {
         val content = when (_state.value.contentState) {
             is NoteContentState.Text -> _state.value.contentState.toNoteTextContent().text
-            is NoteContentState.Checklist -> _state.value.contentState.toNoteChecklistContent().toText()
+            is NoteContentState.Checklist -> _state.value.contentState.toNoteChecklistContent()
+                .toText()
         }
         val title = _state.value.titleState
-        noteUseCases.shareNoteUseCase(sortingType, content, title, context)
+        return noteUseCases.shareNoteUseCase(content, title)
     }
 
     private fun sendUpdateShareDialogVisibility() {
