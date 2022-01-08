@@ -14,12 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ru.dromanryuk.notes.feature_note.presentation.components.DefaultIconButton
 import ru.dromanryuk.notes.ui.theme.NotesTheme
 
 @Composable
-fun OverviewTopAppBar() {
+fun OverviewTopAppBar(onSortingClicked: () -> Unit) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.background,
         elevation = 0.dp
@@ -36,14 +35,13 @@ fun OverviewTopAppBar() {
                 modifier = Modifier
                     .clickable { /* переход в экран поиска заметок */ }
                     .background(MaterialTheme.colors.primary)
-                    .fillMaxWidth(),
+                    .fillMaxSize(),
                 value = "",
                 onValueChange = {  },
                 placeholder = {
                     Text(
                         text = "Искать в заметках",
                         color = MaterialTheme.colors.surface,
-                        fontSize = 17.sp,
                     )
                 },
                 leadingIcon = {
@@ -52,7 +50,9 @@ fun OverviewTopAppBar() {
                 trailingIcon = {
                     Row {
                         DefaultIconButton(Icons.Outlined.Dashboard, MaterialTheme.colors.surface) {  }
-                        DefaultIconButton(Icons.Filled.Menu, MaterialTheme.colors.surface) {  }
+                        DefaultIconButton(Icons.Filled.Menu, MaterialTheme.colors.surface) {
+                            onSortingClicked()
+                        }
                     }
                 }
             )
@@ -64,6 +64,6 @@ fun OverviewTopAppBar() {
 @Composable
 private fun OverviewTopAppBarPreview() {
     NotesTheme {
-        OverviewTopAppBar()
+        OverviewTopAppBar {}
     }
 }

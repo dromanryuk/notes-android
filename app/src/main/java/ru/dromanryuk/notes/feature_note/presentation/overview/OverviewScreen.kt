@@ -7,12 +7,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import ru.dromanryuk.notes.core.UiComponentVisibility
 import ru.dromanryuk.notes.feature_note.presentation.components.DefaultScaffold
-import ru.dromanryuk.notes.feature_note.presentation.overview.components.OverviewBottomAppBar
-import ru.dromanryuk.notes.feature_note.presentation.overview.components.OverviewFloatingActionButton
-import ru.dromanryuk.notes.feature_note.presentation.overview.components.OverviewScreenContent
-import ru.dromanryuk.notes.feature_note.presentation.overview.components.OverviewTopAppBar
+import ru.dromanryuk.notes.feature_note.presentation.overview.components.*
 import ru.dromanryuk.notes.feature_note.presentation.overview.model.OverviewEvent
+import ru.dromanryuk.notes.feature_note.presentation.overview.model.OverviewEvent.SortingTypeChanged
+import ru.dromanryuk.notes.feature_note.presentation.overview.model.OverviewEvent.UpdateSortDialogVisibility
+import ru.dromanryuk.notes.feature_note.presentation.overview.model.OverviewState
 import ru.dromanryuk.notes.ui.theme.NotesTheme
 
 @ExperimentalFoundationApi
@@ -24,15 +25,36 @@ fun OverviewScreen(onNoteClick: (Int) -> Unit) {
 
     DefaultScaffold(
         modifier = Modifier,
-        topBar = { OverviewTopAppBar() },
+        topBar = { OverviewTopAppBar {
+            sendEvent(UpdateSortDialogVisibility(UiComponentVisibility.Show))
+        } },
         bottomBar = { OverviewBottomAppBar() },
-        content = { OverviewScreenContent(state.noteViewStates, onNoteClick) },
-        floatingActionButton = { OverviewFloatingActionButton(
-            onAddClick = { sendEvent(OverviewEvent.CreateNote) },
-            navigateToNote = onNoteClick
-        )
+        content = {
+            OverviewScreenContent(state.noteViewStates, onNoteClick)
+            SortingDialogWrapper(state, sendEvent)
+        },
+        floatingActionButton = {
+            OverviewFloatingActionButton(
+                onAddClick = { sendEvent(OverviewEvent.CreateNote) },
+                navigateToNote = onNoteClick
+            )
         }
     )
+}
+
+@Composable
+private fun SortingDialogWrapper(
+    state: OverviewState,
+    sendEvent: (OverviewEvent) -> Unit,
+) {
+    if (state.sortingDialogVisibility == UiComponentVisibility.Show)
+        SortingDialog(
+            sortingType = state.filterState.sortingType,
+            onDismiss = {
+                sendEvent(UpdateSortDialogVisibility(UiComponentVisibility.Hide))
+            },
+            onChangeSortingType = { sendEvent(SortingTypeChanged(it)) }
+        )
 }
 
 @ExperimentalFoundationApi
@@ -40,6 +62,6 @@ fun OverviewScreen(onNoteClick: (Int) -> Unit) {
 @Composable
 private fun OverviewScreenPreview() {
     NotesTheme {
-        OverviewScreen {  }
+        OverviewScreen { }
     }
 }
