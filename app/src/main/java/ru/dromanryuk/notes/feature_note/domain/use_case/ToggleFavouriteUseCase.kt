@@ -9,8 +9,8 @@ class ToggleFavouriteUseCase(
     private val noteRepository: NoteRepository
 ) {
     suspend operator fun invoke(noteId: Int) = withContext(Dispatchers.Default) {
-        val oldNote = noteRepository.getById(noteId)
-        val newNote = oldNote!!.toggledFavourite()
+        val oldNote = noteRepository.getNoteById(noteId)
+        val newNote = oldNote.toggledFavourite()
         noteRepository.updateNote(newNote)
     }
 

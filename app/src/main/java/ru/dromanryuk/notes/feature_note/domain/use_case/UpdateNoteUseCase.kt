@@ -10,13 +10,12 @@ class UpdateNoteUseCase(
     private val noteRepository: NoteRepository,
 ) {
     suspend operator fun invoke(params: Params) {
-        //noteRepository.update(note)
         updateNote(params)
     }
 
     private suspend fun updateNote(params: Params) {
-        val oldNote = noteRepository.getById(params.id)
-        val newNote = oldNote!!.createUpdated(params)
+        val oldNote = noteRepository.getNoteById(params.id)
+        val newNote = oldNote.createUpdated(params)
         noteRepository.updateNote(newNote)
         when (params.content) {
             is NoteContent.TextNote -> noteRepository.updateNoteTextContent(params.id,

@@ -11,7 +11,7 @@ interface NoteDao {
     fun observeAll(): Flow<List<NoteModel>>
 
     @Query("select * from NoteModel where id = :id")
-    fun observeById(id: Int): Flow<NoteModel>
+    fun observeById(id: Int): Flow<NoteModel?>
 
     @Insert
     fun insertNote(note: NoteModel): Long
@@ -37,13 +37,16 @@ interface NoteDao {
     @Insert
     fun insertCheckboxContent(noteTextModel: NoteCheckboxModel)
 
-    @Query("select * from NoteModel where id = :noteId")
-    suspend fun getNoteTextContentById(noteId: Int): NoteTextEntity?
+    @Query("select * from NoteTextModel where noteId = :noteId")
+    suspend fun getNoteTextContentById(noteId: Int): NoteTextModel?
 
-    @Query("select * from NoteModel where id = :noteId")
-    suspend fun getNoteChecklistContentById(noteId: Int): NoteChecklistEntity?
+    @Query("select * from NoteCheckboxModel where noteId = :noteId")
+    suspend fun getNoteChecklistContentById(noteId: Int): List<NoteCheckboxModel>?
 
     @Query("select * from NoteModel where id = :noteId")
     suspend fun getNoteById(noteId: Int): NoteModel
+
+    @Query("select * from NoteCheckboxModel where id = :id")
+    suspend fun getCheckboxById(id: Int): NoteCheckboxModel
 
 }

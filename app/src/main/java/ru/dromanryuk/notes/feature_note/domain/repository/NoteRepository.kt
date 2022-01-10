@@ -1,24 +1,23 @@
 package ru.dromanryuk.notes.feature_note.domain.repository
 
-import androidx.compose.foundation.text.InlineTextContent
 import kotlinx.coroutines.flow.Flow
 import ru.dromanryuk.notes.feature_note.data.model.*
 import ru.dromanryuk.notes.feature_note.domain.model.Checkbox
 import ru.dromanryuk.notes.feature_note.domain.model.Note
-import ru.dromanryuk.notes.feature_note.domain.model.NoteContent
-import javax.inject.Inject
 
 interface NoteRepository {
 
-    fun observeAll(): Flow<List<Note?>>
+    fun observeAll(): Flow<List<Note>>
 
     fun observeById(id: Int): Flow<Note?>
 
-    suspend fun getTextContentById(noteId: Int): NoteTextEntity?
+    suspend fun getTextContentById(noteId: Int): NoteTextModel?
 
-    suspend fun getChecklistContentById(noteId: Int): NoteChecklistEntity?
+    suspend fun getChecklistContentById(noteId: Int): List<NoteCheckboxModel>?
 
-    suspend fun getById(id: Int): Note?
+    suspend fun getNoteById(id: Int): Note
+
+    suspend fun getCheckboxById(id: Int): Checkbox
 
     suspend fun addNote(note: NoteModel): Int
 

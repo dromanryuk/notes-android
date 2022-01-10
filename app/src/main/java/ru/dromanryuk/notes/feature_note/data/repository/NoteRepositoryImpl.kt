@@ -14,60 +14,52 @@ import javax.inject.Inject
 class NoteRepositoryImpl @Inject constructor(
     private val noteDao: NoteDao,
 ) : NoteRepository {
-    override fun observeAll(): Flow<List<Note?>> =
+    override fun observeAll(): Flow<List<Note>> =
         noteDao.observeAll()
-            .map {
-                it.map {
-                    when {
-                        getTextContentById(it.id) != null -> {
-                            getTextContentById(it.id)?.toNote()
-                        }
-                        getChecklistContentById(it.id) != null -> {
-                            getChecklistContentById(it.id)?.toNote()
-                        }
-                        else -> {
-                            null
-                        }
-                    }
+            .map { notes ->
+                notes.map {
+                    generateNote(it)
                 }
             }
+
+    private suspend fun generateNote(
+        noteModel: NoteModel,
+    ): Note {
+        return when {
+            getTextContentById(noteModel.id) != null -> {
+                val textContent = getTextContentById(noteModel.id)
+                NoteTextEntity(noteModel, textContent).toNote()
+            }
+            getChecklistContentById(noteModel.id) != null -> {
+                val checklist = getChecklistContentById(noteModel.id)
+                NoteChecklistEntity(noteModel, checklist).toNote()
+            }
+            else -> {
+                error("Note is null")
+            }
+        }
+    }
 
     override fun observeById(id: Int): Flow<Note?> =
         noteDao.observeById(id).map {
-            when {
-                getTextContentById(it.id) != null -> {
-                    getTextContentById(it.id)!!.toNote()
-                }
-                getChecklistContentById(it.id) != null -> {
-                    getChecklistContentById(it.id)!!.toNote()
-                }
-                else -> {
-                    null
-                }
-            }
+            it?.let {generateNote(it) }
         }
 
-    override suspend fun getTextContentById(noteId: Int): NoteTextEntity? {
+    override suspend fun getTextContentById(noteId: Int): NoteTextModel? {
         return noteDao.getNoteTextContentById(noteId)
     }
 
-    override suspend fun getChecklistContentById(noteId: Int): NoteChecklistEntity? {
+    override suspend fun getChecklistContentById(noteId: Int): List<NoteCheckboxModel>? {
         return noteDao.getNoteChecklistContentById(noteId)
     }
 
-    override suspend fun getById(id: Int): Note? {
+    override suspend fun getNoteById(id: Int): Note {
         val note = noteDao.getNoteById(id)
-        return when {
-            getTextContentById(note.id) != null -> {
-                getTextContentById(note.id)?.toNote()!!
-            }
-            getChecklistContentById(note.id) != null -> {
-                getChecklistContentById(note.id)?.toNote()!!
-            }
-            else -> {
-                null
-            }
-        }
+        return generateNote(note)
+    }
+
+    override suspend fun getCheckboxById(id: Int): Checkbox {
+        return noteDao.getCheckboxById(id).toCheckbox()
     }
 
     override suspend fun addNote(note: NoteModel): Int {

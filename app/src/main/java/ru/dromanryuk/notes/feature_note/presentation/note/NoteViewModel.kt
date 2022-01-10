@@ -8,6 +8,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.dromanryuk.notes.core.UiComponentVisibility
+import ru.dromanryuk.notes.feature_note.domain.model.Checkbox
+import ru.dromanryuk.notes.feature_note.domain.model.Note
 import ru.dromanryuk.notes.feature_note.domain.model.NoteContent
 import ru.dromanryuk.notes.feature_note.domain.model.toText
 import ru.dromanryuk.notes.feature_note.domain.use_case.UpdateNoteUseCase
@@ -16,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NoteViewModel @Inject constructor(
-    private val noteUseCases: NoteUseCases,
+    private val useCases: NoteUseCases,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val noteId = savedStateHandle.get<Int>("noteId")
@@ -30,22 +32,52 @@ class NoteViewModel @Inject constructor(
     }
 
     private fun observeNote() {
-        noteUseCases.observeNoteUseCase(noteId)
+        useCases.observeNoteUseCase(noteId)
             .onEach { note ->
-                _state.update {
-                    it.copy(
-                        titleState = note!!.name,
-                        contentState = when (note.content) {
-                            is NoteContent.TextNote -> NoteContentState.Text(text = note.content.text)
-                            is NoteContent.ChecklistNote -> NoteContentState.Checklist(checklist = note.content.checkboxes)
-                        },
-                        favouriteState = note.isFavourite,
-                        editingDateTime = note.metadata.editingDateTime.toString(),
-                        isExitFromScreen = false
-                    )
+                if (note != null) {
+                    onNewNote(note)
+                } else {
+                    onNoNote()
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun onNewNote(note: Note) {
+        _state.update {
+            it.copy(
+                titleState = note.name,
+                contentState = when (note.content) {
+                    is NoteContent.TextNote -> NoteContentState.Text(text = note.content.text)
+                    is NoteContent.ChecklistNote -> NoteContentState.Checklist(
+                        checklist = generateChecklistContent(note.content.checkboxes)
+                    )
+                },
+                favouriteState = note.isFavourite,
+                editingDateTime = note.metadata.editingDateTime.toString()
+            )
+        }
+    }
+
+    private fun onNoNote() {
+        _state.update {
+            it.copy(
+                isExitFromScreen = true
+            )
+        }
+    }
+
+    private fun generateChecklistContent(checkboxes: List<Checkbox>): ChecklistState {
+        val selectedList = mutableListOf<Checkbox>()
+        val unselectedList = mutableListOf<Checkbox>()
+        checkboxes.forEach {
+            if (it.selected) {
+                selectedList.add(it)
+            } else {
+                unselectedList.add(it)
+            }
+        }
+        return ChecklistState(selectedList, unselectedList)
     }
 
     fun sendEvent(event: NoteEditingEvent) {
@@ -84,7 +116,7 @@ class NoteViewModel @Inject constructor(
     }
 
     private fun changeFavourite() = viewModelScope.launch {
-        noteUseCases.toggleFavourite(noteId)
+        useCases.toggleFavourite(noteId)
     }
 
     fun getShareFile(): Uri {
@@ -94,22 +126,32 @@ class NoteViewModel @Inject constructor(
                 .toText()
         }
         val title = _state.value.titleState
-        return noteUseCases.shareNoteUseCase(content, title)
+        return useCases.shareNoteUseCase(content, title)
     }
 
     private fun sendUpdateShareDialogVisibility() {
         sendEvent(NoteEditingEvent.UpdateShareDialogVisibility(UiComponentVisibility.Show))
     }
 
-    private fun checkNoteFilling(): Boolean {
-        return (_state.value.titleState.isEmpty()
-                && _state.value.contentState.text.isNullOrEmpty()
-                && _state.value.contentState.checklist.isNullOrEmpty())
+    private fun checkNoteFilling(state: NoteState): Boolean {
+        if (state.titleState.isEmpty()) {
+            when(state.contentState) {
+                is NoteContentState.Text -> if(state.contentState.text.isNullOrEmpty()) return true
+                is NoteContentState.Checklist ->
+                    if(state.contentState.checklist != null) {
+                        if (state.contentState.checklist?.selectedList.isNullOrEmpty() &&
+                                state.contentState.checklist?.unselectedList.isNullOrEmpty()) {
+                            return true
+                        }
+                    }
+            }
+        }
+        return false
     }
 
     private fun removeNote() = viewModelScope.launch {
         onExitScreen()
-        noteUseCases.removeNoteUseCase(noteId)
+        useCases.removeNoteUseCase(noteId)
     }
 
     private fun changeTitle(title: String) = viewModelScope.launch {
@@ -131,9 +173,9 @@ class NoteViewModel @Inject constructor(
         }
     }
 
-    private fun onSaveEditing(value: NoteState) = with(value) {
+    private fun onSaveEditing(state: NoteState) = with(state) {
         viewModelScope.launch {
-            noteUseCases.updateNoteUseCase(
+            useCases.updateNoteUseCase(
                 UpdateNoteUseCase.Params(
                     id = noteId,
                     title = titleState,
