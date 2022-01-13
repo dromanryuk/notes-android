@@ -19,11 +19,17 @@ interface NoteDao {
     @Update
     fun updateNote(note: NoteModel)
 
+    @Update
+    fun updateCheckbox(checkbox: NoteCheckboxModel)
+
     @Query("delete from NoteModel where id = :noteId")
     suspend fun deleteNote(noteId: Int)
 
     @Query("delete from NoteTextModel where noteId = :noteId")
     suspend fun deleteNoteTextContent(noteId: Int)
+
+    @Query("delete from NoteCheckboxModel where noteId = :noteId")
+    suspend fun deleteNoteChecklistContent(noteId: Int)
 
     @Update
     fun updateNoteTextContent(textContent: NoteTextModel)
@@ -35,7 +41,7 @@ interface NoteDao {
     fun insertTextContent(noteTextModel: NoteTextModel)
 
     @Insert
-    fun insertCheckboxContent(noteTextModel: NoteCheckboxModel)
+    fun insertCheckboxContent(noteCheckboxModel: NoteCheckboxModel)
 
     @Query("select * from NoteTextModel where noteId = :noteId")
     suspend fun getNoteTextContentById(noteId: Int): NoteTextModel?

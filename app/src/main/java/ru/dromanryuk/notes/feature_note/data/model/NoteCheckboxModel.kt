@@ -15,7 +15,7 @@ import ru.dromanryuk.notes.feature_note.domain.model.Checkbox
 )
 data class NoteCheckboxModel(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
     val noteId: Int,
     val content: String,
     val selected: Boolean,

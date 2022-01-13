@@ -14,4 +14,6 @@ class NoteUseCases @Inject constructor(
     val removeNoteUseCase = RemoveNoteUseCase(noteRepository)
     val shareNoteUseCase = ShareNoteUseCase(noteShareRepository)
     val toggleFavourite = ToggleFavouriteUseCase(noteRepository)
+    val createNoteChecklistUseCase = CreateNoteCheckboxUseCase(noteRepository)
+    val updateCheckboxUseCase = UpdateCheckboxUseCase(noteRepository)
 }

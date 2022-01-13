@@ -70,17 +70,22 @@ class NoteRepositoryImpl @Inject constructor(
         noteDao.insertTextContent(text)
     }
 
-    override suspend fun addCheckbox(checkbox: Checkbox) {
-        TODO("Not yet implemented")
+    override suspend fun addCheckbox(checkbox: NoteCheckboxModel) {
+        noteDao.insertCheckboxContent(checkbox)
     }
 
     override suspend fun updateNote(note: Note) = withContext(Dispatchers.IO) {
         noteDao.updateNote(note.toNoteModel())
     }
 
+    override suspend fun updateCheckbox(noteId: Int, checkbox: Checkbox) = withContext(Dispatchers.IO) {
+        noteDao.updateCheckbox(checkbox.toNoteCheckboxModel(noteId))
+    }
+
     override suspend fun remove(noteId: Int) {
         noteDao.deleteNote(noteId)
         noteDao.deleteNoteTextContent(noteId)
+        noteDao.deleteNoteChecklistContent(noteId)
     }
 
     override suspend fun updateNoteTextContent(noteId: Int, noteTextContent: String) =

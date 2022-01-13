@@ -23,9 +23,13 @@ interface NoteRepository {
 
     suspend fun addText(text: NoteTextModel)
 
-    suspend fun addCheckbox(checkbox: Checkbox)
+    suspend fun addCheckbox(checkbox: NoteCheckboxModel)
 
     suspend fun updateNote(note: Note)
+
+    suspend fun updateCheckbox(noteId: Int, checkbox: Checkbox)
+
+    suspend fun remove(noteId: Int)
 
     suspend fun updateNoteTextContent(noteId: Int, noteTextContent: String)
 

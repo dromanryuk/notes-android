@@ -12,6 +12,7 @@ import ru.dromanryuk.notes.feature_note.domain.model.Checkbox
 import ru.dromanryuk.notes.feature_note.domain.model.Note
 import ru.dromanryuk.notes.feature_note.domain.model.NoteContent
 import ru.dromanryuk.notes.feature_note.domain.model.toText
+import ru.dromanryuk.notes.feature_note.domain.use_case.UpdateCheckboxUseCase
 import ru.dromanryuk.notes.feature_note.domain.use_case.UpdateNoteUseCase
 import ru.dromanryuk.notes.feature_note.presentation.note.model.*
 import javax.inject.Inject
@@ -83,25 +84,29 @@ class NoteViewModel @Inject constructor(
     fun sendEvent(event: NoteEditingEvent) {
         when (event) {
             is NoteEditingEvent.OnTitleChanged -> changeTitle(event.title)
-            is NoteEditingEvent.OnContentChanged -> when (_state.value.contentState) {
+            is NoteEditingEvent.OnTextContentChanged -> when (_state.value.contentState) {
                 is NoteContentState.Text -> setTextContent(event.content)
-                is NoteContentState.Checklist -> {
-                }
+                //is NoteContentState.Checklist -> setChecklistContent(event.content)
             }
+            is NoteEditingEvent.OnCheckboxChanged ->
+                updateCheckbox(event.checkbox.id, event.checkbox.content, event.checkbox.selected)
             is NoteEditingEvent.AdditionalActions ->
-                when(event.action) {
-                ModalBottomSheetAction.AddPassword -> {}
-                ModalBottomSheetAction.CopyNote -> {}
-                ModalBottomSheetAction.DeleteNote -> removeNote()
-                ModalBottomSheetAction.ShareNote -> {
-                    sendUpdateShareDialogVisibility()
+                when (event.action) {
+                    ModalBottomSheetAction.AddPassword -> {
+                    }
+                    ModalBottomSheetAction.CopyNote -> {
+                    }
+                    ModalBottomSheetAction.DeleteNote -> removeNote()
+                    ModalBottomSheetAction.ShareNote -> {
+                        sendUpdateShareDialogVisibility()
+                    }
                 }
-            }
             is NoteEditingEvent.UpdateShareDialogVisibility -> {
                 _state.update { it.copy(shareDialogVisibility = event.visibility) }
             }
+            NoteEditingEvent.AddCheckbox -> addCheckbox()
             NoteEditingEvent.ExitScreen -> {
-                if (checkNoteFilling()) {
+                if (checkNoteFilling(_state.value)) {
                     removeNote()
                 } else {
                     sendSaveEditingEvent()
@@ -113,6 +118,16 @@ class NoteViewModel @Inject constructor(
             NoteEditingEvent.SetReminder -> {
             }
         }
+    }
+
+    private fun updateCheckbox(id: Int, content: String, selected: Boolean) = viewModelScope.launch{
+        useCases.updateCheckboxUseCase(
+            UpdateCheckboxUseCase.Params(id, noteId, content, selected)
+        )
+    }
+
+    private fun addCheckbox() = viewModelScope.launch {
+        useCases.createNoteChecklistUseCase(noteId)
     }
 
     private fun changeFavourite() = viewModelScope.launch {
