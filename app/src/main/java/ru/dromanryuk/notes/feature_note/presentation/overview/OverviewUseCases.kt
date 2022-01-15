@@ -12,6 +12,7 @@ class OverviewUseCases @Inject constructor(
     val observeNotes = ObserveNotesUseCase(noteRepository, noteFilterRepository)
     val createNoteUseCase = CreateNoteUseCase(noteRepository)
     val createNoteTextContentUseCase = CreateNoteTextContentUseCase(noteRepository)
+    val createNoteChecklistUseCase = CreateNoteCheckboxUseCase(noteRepository)
 
     val observeNoteFilterState = ObserveNoteFilterState(noteFilterRepository)
     val updateNoteFilterState = UpdateNoteFilterStateUseCase(noteFilterRepository)

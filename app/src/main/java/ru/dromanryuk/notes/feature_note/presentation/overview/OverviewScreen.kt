@@ -28,14 +28,16 @@ fun OverviewScreen(onNoteClick: (Int) -> Unit) {
         topBar = { OverviewTopAppBar {
             sendEvent(UpdateSortDialogVisibility(UiComponentVisibility.Show))
         } },
-        bottomBar = { OverviewBottomAppBar() },
+        bottomBar = { OverviewBottomAppBar(
+            onAddChecklistNoteClick = { sendEvent(OverviewEvent.CreateChecklistNote) }
+        ) },
         content = {
             OverviewScreenContent(state.noteViewStates, onNoteClick)
             SortingDialogWrapper(state, sendEvent)
         },
         floatingActionButton = {
             OverviewFloatingActionButton(
-                onAddClick = { sendEvent(OverviewEvent.CreateNote) },
+                onAddClick = { sendEvent(OverviewEvent.CreateTextNote) },
                 navigateToNote = onNoteClick
             )
         }

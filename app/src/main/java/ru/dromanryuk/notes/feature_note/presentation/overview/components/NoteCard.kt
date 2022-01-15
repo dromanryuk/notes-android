@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -14,10 +13,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.dromanryuk.notes.feature_note.domain.model.Metadata
-import ru.dromanryuk.notes.feature_note.domain.model.Note
-import ru.dromanryuk.notes.feature_note.domain.model.NoteContent
-import ru.dromanryuk.notes.feature_note.domain.model.Password
 import ru.dromanryuk.notes.feature_note.presentation.overview.model.NoteViewState
 import ru.dromanryuk.notes.ui.theme.NotesTheme
 
@@ -25,13 +20,13 @@ import ru.dromanryuk.notes.ui.theme.NotesTheme
 @Composable
 fun NoteCard(
     note: NoteViewState,
-    modifier: Modifier,
+    modifier: Modifier
 ) {
     Card(
         modifier = modifier,
         elevation = 10.dp,
         backgroundColor = MaterialTheme.colors.background,
-        border = BorderStroke(1.dp, MaterialTheme.colors.onBackground)
+        border = BorderStroke(1.dp, MaterialTheme.colors.onBackground),
     ) {
         Column(
             modifier = Modifier

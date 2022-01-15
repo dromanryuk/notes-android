@@ -5,7 +5,8 @@ import ru.dromanryuk.notes.feature_note.domain.filter.FavouriteFilter
 import ru.dromanryuk.notes.feature_note.domain.filter.NoteSortingType
 
 sealed class OverviewEvent {
-    object CreateNote : OverviewEvent()
+    object CreateTextNote : OverviewEvent()
+    object CreateChecklistNote : OverviewEvent()
 
     data class SearchTextChanged(val searchText: String) : OverviewEvent()
     data class FavouriteFilterChanged(val favouriteFilter: FavouriteFilter) : OverviewEvent()

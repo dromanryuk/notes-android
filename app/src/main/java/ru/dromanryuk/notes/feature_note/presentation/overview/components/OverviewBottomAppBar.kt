@@ -15,7 +15,9 @@ import ru.dromanryuk.notes.feature_note.presentation.components.DefaultIconButto
 import ru.dromanryuk.notes.ui.theme.NotesTheme
 
 @Composable
-fun OverviewBottomAppBar() {
+fun OverviewBottomAppBar(
+    onAddChecklistNoteClick: () -> Unit,
+) {
     BottomAppBar(
         backgroundColor = MaterialTheme.colors.primary,
         cutoutShape = RoundedCornerShape(50)
@@ -26,7 +28,10 @@ fun OverviewBottomAppBar() {
         ) {
             DefaultIconButton(
                 image = Icons.Outlined.CheckBox,
-                color = MaterialTheme.colors.surface) {}
+                color = MaterialTheme.colors.surface
+            ) {
+                onAddChecklistNoteClick()
+            }
             DefaultIconButton(
                 image = Icons.Outlined.BookmarkBorder,
                 color = MaterialTheme.colors.surface) {}
@@ -38,6 +43,6 @@ fun OverviewBottomAppBar() {
 @Composable
 private fun OverviewBottomAppBarPreview() {
     NotesTheme {
-        OverviewBottomAppBar()
+        OverviewBottomAppBar({})
     }
 }

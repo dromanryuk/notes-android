@@ -50,7 +50,8 @@ class OverviewViewModel @Inject constructor(
 
     fun sendEvent(event: OverviewEvent) {
         when (event) {
-            OverviewEvent.CreateNote -> createTextNote()
+            OverviewEvent.CreateTextNote -> createTextNote()
+            OverviewEvent.CreateChecklistNote -> createChecklistNote()
             is OverviewEvent.FavouriteFilterChanged -> { }
             is OverviewEvent.SearchTextChanged -> { }
             is OverviewEvent.SortingTypeChanged -> updateSortingType(event.sortingType)
@@ -62,12 +63,14 @@ class OverviewViewModel @Inject constructor(
 
     private fun createTextNote() = viewModelScope.launch {
         useCases.createNoteUseCase() {
-            useCases.createNoteTextContentUseCase.invoke(it)
+            useCases.createNoteTextContentUseCase(it)
         }
     }
 
     private fun createChecklistNote() = viewModelScope.launch {
-
+        useCases.createNoteUseCase() {
+            useCases.createNoteChecklistUseCase(it)
+        }
     }
 
     private fun updateSortingType(sortingType: NoteSortingType) = viewModelScope.launch {
