@@ -62,6 +62,11 @@ class NoteRepositoryImpl @Inject constructor(
         return noteDao.getCheckboxById(id).toCheckbox()
     }
 
+    override suspend fun getPasswordById(noteId: Int): String {
+        val password = noteDao.getPasswordById(noteId)
+        return if (password.isNullOrEmpty()) "" else password
+    }
+
     override suspend fun addNote(note: NoteModel): Int {
         return noteDao.insertNote(note).toInt()
     }

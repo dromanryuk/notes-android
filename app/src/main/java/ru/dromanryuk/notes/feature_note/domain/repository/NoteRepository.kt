@@ -19,6 +19,8 @@ interface NoteRepository {
 
     suspend fun getCheckboxById(id: Int): Checkbox
 
+    suspend fun getPasswordById(noteId: Int): String
+
     suspend fun addNote(note: NoteModel): Int
 
     suspend fun addText(text: NoteTextModel)

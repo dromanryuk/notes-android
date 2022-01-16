@@ -55,4 +55,6 @@ interface NoteDao {
     @Query("select * from NoteCheckboxModel where id = :id")
     suspend fun getCheckboxById(id: Int): NoteCheckboxModel
 
+    @Query("select password from NoteModel where id = :noteId")
+    suspend fun getPasswordById(noteId: Int): String?
 }
