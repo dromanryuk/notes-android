@@ -5,6 +5,7 @@ data class PasswordState(
     val verifiablePassword: String = "",
     val buttons: List<List<PasswordButtonType>> = generateButtonsMatrix(PasswordButtonType.Fingerprint),
     val isExitFromScreen: Boolean = false,
+    val isLoginToNote: Boolean = false
 )
 
 fun generateButtonsMatrix(lastButton : PasswordButtonType) = listOf(

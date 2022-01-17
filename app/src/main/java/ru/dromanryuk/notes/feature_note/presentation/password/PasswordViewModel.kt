@@ -51,10 +51,10 @@ class PasswordViewModel @Inject constructor(
                 } else {
                     onVerifiablePasswordChanged(event.password)
                 }
-                if (_state.value.verifiablePassword.length == 4) {
+                if (_state.value.password.length == 4) {
                     if (_state.value.password == _state.value.verifiablePassword) {
                         savePassword()
-                        onExitScreen()
+                        onLoginToNote()
                     }
                 }
             }
@@ -129,5 +129,9 @@ class PasswordViewModel @Inject constructor(
 
     private fun onExitScreen() {
         _state.update { it.copy(isExitFromScreen = true) }
+    }
+
+    private fun onLoginToNote() {
+        _state.update { it.copy(isLoginToNote = true) }
     }
 }
