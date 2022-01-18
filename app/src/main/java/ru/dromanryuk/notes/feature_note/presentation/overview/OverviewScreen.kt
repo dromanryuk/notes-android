@@ -18,7 +18,10 @@ import ru.dromanryuk.notes.ui.theme.NotesTheme
 
 @ExperimentalFoundationApi
 @Composable
-fun OverviewScreen(onNoteClick: (Int) -> Unit) {
+fun OverviewScreen(
+    onNoteClick: (Int) -> Unit,
+    withPassword: (Int) -> Unit
+) {
     val viewModel: OverviewViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
     val sendEvent = viewModel::sendEvent
@@ -32,7 +35,7 @@ fun OverviewScreen(onNoteClick: (Int) -> Unit) {
             onAddChecklistNoteClick = { sendEvent(OverviewEvent.CreateChecklistNote) }
         ) },
         content = {
-            OverviewScreenContent(state.noteViewStates, onNoteClick)
+            OverviewScreenContent(state.noteViewStates, onNoteClick, withPassword)
             SortingDialogWrapper(state, sendEvent)
         },
         floatingActionButton = {
@@ -64,6 +67,6 @@ private fun SortingDialogWrapper(
 @Composable
 private fun OverviewScreenPreview() {
     NotesTheme {
-        OverviewScreen { }
+        OverviewScreen({}, {})
     }
 }

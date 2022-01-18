@@ -87,10 +87,14 @@ class NoteRepositoryImpl @Inject constructor(
         noteDao.updateCheckbox(checkbox.toNoteCheckboxModel(noteId))
     }
 
-    override suspend fun remove(noteId: Int) {
+    override suspend fun removeNote(noteId: Int) {
         noteDao.deleteNote(noteId)
         noteDao.deleteNoteTextContent(noteId)
         noteDao.deleteNoteChecklistContent(noteId)
+    }
+
+    override suspend fun removePassword(note: NoteModel) = withContext(Dispatchers.IO) {
+        noteDao.updateNote(note)
     }
 
     override suspend fun updateNoteTextContent(noteId: Int, noteTextContent: String) =

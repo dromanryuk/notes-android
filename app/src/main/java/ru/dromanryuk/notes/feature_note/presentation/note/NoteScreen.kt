@@ -21,13 +21,15 @@ import ru.dromanryuk.notes.ui.theme.NotesTheme
 @ExperimentalMaterialApi
 @Composable
 fun NoteScreen(
-    navigateBack: () -> Unit,
+    navigateToOverviewScreen: () -> Unit,
+    navigateToPasswordScreen: () -> Unit
 ) {
     val viewModel: NoteViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
     val sendEvent = viewModel::sendEvent
 
-    val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val modalBottomSheetState =
+        rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
     ModalBottomSheetLayout(
         sheetContent = {
@@ -55,14 +57,19 @@ fun NoteScreen(
                     onContentChange = { sendEvent(NoteEditingEvent.OnContentChanged(it)) }
                 )
                 ShareDialogWrapper(state, sendEvent, modalBottomSheetState, scope, viewModel)
+                RemovePasswordDialogWrapper(state, sendEvent)
             }
         ) {
 
         }
-        BackHandler(onBack = navigateBack)
+        BackHandler(onBack = navigateToOverviewScreen)
         LaunchedEffect(key1 = state.isExitFromScreen) {
             if (state.isExitFromScreen)
-                navigateBack()
+                navigateToOverviewScreen()
+        }
+        LaunchedEffect(key1 = state.isNavigateToPasswordScreen) {
+            if (state.isNavigateToPasswordScreen)
+                navigateToPasswordScreen()
         }
     }
 }
@@ -96,11 +103,23 @@ private fun ShareDialogWrapper(
     }
 }
 
+@Composable
+private fun RemovePasswordDialogWrapper(
+    state: NoteState,
+    sendEvent: (NoteEditingEvent) -> Unit,
+) {
+    if (state.removePasswordDialogVisibility == UiComponentVisibility.Show)
+        RemovePasswordDialog(
+            onDismiss = { sendEvent(UpdateRemovePasswordDialogVisibility(UiComponentVisibility.Hide)) },
+            onRemoveNotePassword = { sendEvent(RemoveNotePassword) }
+        )
+}
+
 @ExperimentalMaterialApi
 @Preview
 @Composable
 private fun OverviewTopAppBarPreview() {
     NotesTheme {
-        NoteScreen {}
+        NoteScreen({}, {})
     }
 }

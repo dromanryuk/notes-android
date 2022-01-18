@@ -18,7 +18,8 @@ import ru.dromanryuk.notes.feature_note.presentation.overview.model.NoteViewStat
 @Composable
 fun OverviewScreenContent(
     notesViewState: List<NoteViewState>,
-    onNoteClick: (Int) -> Unit
+    onNoteClick: (Int) -> Unit,
+    withPassword: (Int) -> Unit
 ) {
     val listState = rememberLazyListState()
     LaunchedEffect(key1 = notesViewState.size) {
@@ -38,7 +39,13 @@ fun OverviewScreenContent(
         items(notesViewState) {
             NoteCard(
                 note = it,
-                modifier = Modifier.clickable { onNoteClick(it.id) }
+                modifier = Modifier.clickable {
+                    if (it.password.isEmpty()) {
+                        onNoteClick(it.id)
+                    } else {
+                        withPassword(it.id)
+                    }
+                }
             )
         }
     }

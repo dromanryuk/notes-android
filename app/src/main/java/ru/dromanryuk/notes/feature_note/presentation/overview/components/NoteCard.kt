@@ -61,7 +61,8 @@ fun PreviewNoteCard() {
             note = NoteViewState(
                 0,
                 "title",
-                "content"),
+                "content",
+                "password"),
             modifier = Modifier
                 .fillMaxWidth()
                 .combinedClickable(

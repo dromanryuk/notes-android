@@ -8,10 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.dromanryuk.notes.core.UiComponentVisibility
-import ru.dromanryuk.notes.feature_note.domain.model.Checkbox
-import ru.dromanryuk.notes.feature_note.domain.model.Note
-import ru.dromanryuk.notes.feature_note.domain.model.NoteContent
-import ru.dromanryuk.notes.feature_note.domain.model.toText
+import ru.dromanryuk.notes.feature_note.domain.model.*
 import ru.dromanryuk.notes.feature_note.domain.use_case.UpdateCheckboxUseCase
 import ru.dromanryuk.notes.feature_note.domain.use_case.UpdateNoteUseCase
 import ru.dromanryuk.notes.feature_note.presentation.note.model.*
@@ -55,7 +52,8 @@ class NoteViewModel @Inject constructor(
                     )
                 },
                 favouriteState = note.isFavourite,
-                editingDateTime = note.metadata.editingDateTime.toString()
+                editingDateTime = note.metadata.editingDateTime.toString(),
+                passwordState = note.password
             )
         }
     }
@@ -93,6 +91,10 @@ class NoteViewModel @Inject constructor(
             is NoteEditingEvent.AdditionalActions ->
                 when (event.action) {
                     ModalBottomSheetAction.AddPassword -> {
+                        when (_state.value.passwordState) {
+                            is Password.NonePassword -> onNavigateToPasswordScreen()
+                            is Password.CodePassword -> sendUpdateRemoveNotePasswordDialogVisibility()
+                        }
                     }
                     ModalBottomSheetAction.CopyNote -> {
                     }
@@ -104,6 +106,9 @@ class NoteViewModel @Inject constructor(
             is NoteEditingEvent.UpdateShareDialogVisibility -> {
                 _state.update { it.copy(shareDialogVisibility = event.visibility) }
             }
+            is NoteEditingEvent.UpdateRemovePasswordDialogVisibility -> {
+                _state.update { it.copy(removePasswordDialogVisibility = event.visibility) }
+            }
             NoteEditingEvent.AddCheckbox -> addCheckbox()
             NoteEditingEvent.ExitScreen -> {
                 if (checkNoteFilling(_state.value)) {
@@ -114,6 +119,7 @@ class NoteViewModel @Inject constructor(
                 }
             }
             NoteEditingEvent.SaveEditing -> onSaveEditing(_state.value)
+            NoteEditingEvent.RemoveNotePassword -> removeNotePassword()
             NoteEditingEvent.ToggleFavourite -> changeFavourite()
             NoteEditingEvent.SetReminder -> {
             }
@@ -146,6 +152,10 @@ class NoteViewModel @Inject constructor(
 
     private fun sendUpdateShareDialogVisibility() {
         sendEvent(NoteEditingEvent.UpdateShareDialogVisibility(UiComponentVisibility.Show))
+    }
+
+    private fun sendUpdateRemoveNotePasswordDialogVisibility() {
+        sendEvent(NoteEditingEvent.UpdateRemovePasswordDialogVisibility(UiComponentVisibility.Show))
     }
 
     private fun checkNoteFilling(state: NoteState): Boolean {
@@ -204,8 +214,16 @@ class NoteViewModel @Inject constructor(
         }
     }
 
+    private fun removeNotePassword() = viewModelScope.launch {
+        useCases.removePasswordUseCase(noteId)
+    }
+
     private fun onExitScreen() {
         _state.update { it.copy(isExitFromScreen = true) }
+    }
+
+    private fun onNavigateToPasswordScreen() {
+        _state.update { it.copy(isNavigateToPasswordScreen = true) }
     }
 
     private fun sendSaveEditingEvent() {

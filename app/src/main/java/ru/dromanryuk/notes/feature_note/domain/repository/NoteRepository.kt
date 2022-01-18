@@ -31,7 +31,9 @@ interface NoteRepository {
 
     suspend fun updateCheckbox(noteId: Int, checkbox: Checkbox)
 
-    suspend fun remove(noteId: Int)
+    suspend fun removeNote(noteId: Int)
+
+    suspend fun removePassword(note: NoteModel)
 
     suspend fun updateNoteTextContent(noteId: Int, noteTextContent: String)
 

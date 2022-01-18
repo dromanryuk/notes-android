@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import ru.dromanryuk.notes.feature_note.presentation.note.NoteScreen
 import ru.dromanryuk.notes.feature_note.presentation.overview.OverviewScreen
+import ru.dromanryuk.notes.feature_note.presentation.password.PasswordScreen
 import ru.dromanryuk.notes.feature_note.presentation.util.Screen
 import ru.dromanryuk.notes.ui.theme.NotesTheme
 
@@ -45,6 +46,9 @@ class MainActivity : ComponentActivity() {
                 OverviewScreen(
                     onNoteClick = { id ->
                         navController.navigate(Screen.Note.route + "/${id}")
+                    },
+                    withPassword = { id ->
+                        navController.navigate(Screen.Password.route + "/${id}")
                     }
                 )
             }
@@ -54,7 +58,24 @@ class MainActivity : ComponentActivity() {
             ) {
                 val noteId = it.arguments?.getInt("noteId")
                     ?: error("noteId argument is not passed")
-                NoteScreen { navController.navigate(Screen.Overview.route) }
+                NoteScreen(
+                    navigateToOverviewScreen = { navController.navigate(Screen.Overview.route) },
+                    navigateToPasswordScreen = {
+                        navController.navigate(Screen.Password.route + "/${noteId}")
+                    }
+                )
+            }
+            composable(
+                route = Screen.Password.route + "/{noteId}",
+                arguments = listOf(navArgument("noteId") { type = NavType.IntType })
+            ) {
+                val noteId = it.arguments?.getInt("noteId")
+                    ?: error("noteId argument is not passed")
+                PasswordScreen(
+                    navigateBack = { navController.popBackStack() },
+                    navigateToNoteScreen = {
+                        navController.navigate(Screen.Note.route + "/${noteId}") }
+                )
             }
         }
     }

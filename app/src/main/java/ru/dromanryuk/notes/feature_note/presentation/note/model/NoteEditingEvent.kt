@@ -12,6 +12,8 @@ sealed class NoteEditingEvent {
 
     data class UpdateShareDialogVisibility(val visibility: UiComponentVisibility) : NoteEditingEvent()
 
+    data class UpdateRemovePasswordDialogVisibility(val visibility: UiComponentVisibility) : NoteEditingEvent()
+
     object AddCheckbox : NoteEditingEvent()
 
     object SetReminder : NoteEditingEvent()
@@ -19,6 +21,8 @@ sealed class NoteEditingEvent {
     object ToggleFavourite : NoteEditingEvent()
 
     object SaveEditing : NoteEditingEvent()
+
+    object RemoveNotePassword : NoteEditingEvent()
 
     object ExitScreen: NoteEditingEvent()
 }

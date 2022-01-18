@@ -17,7 +17,11 @@ fun NoteChecklistEntity.toNote() = Note(
     content = NoteContent.ChecklistNote(checkboxes!!.map { it.toCheckbox() }),
     name = note.name,
     isFavourite = note.isFavourite,
-    password = Password.NonePassword,
+    password = if (note.password.isNullOrEmpty()) {
+        Password.NonePassword
+    } else {
+        Password.CodePassword(note.password)
+    },
     metadata = Metadata(
         Instant.fromEpochMilliseconds(note.creationTimestamp),
         Instant.fromEpochMilliseconds(note.editingTimestamp)
