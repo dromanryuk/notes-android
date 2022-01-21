@@ -1,4 +1,4 @@
-package ru.dromanryuk.notes.feature_note.presentation.password.components
+package ru.dromanryuk.notes.feature_note.presentation.password.commonPassword.components
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
@@ -6,10 +6,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.sp
 
 @Composable
-fun PasswordTextButton(
-    text: String,
+fun PasswordNumberButton(
+    digit: String,
     modifier: Modifier,
     onClick: () -> Unit
 ) {
@@ -19,7 +20,8 @@ fun PasswordTextButton(
         onClick = { onClick() }
     ) {
         Text(
-            text = text,
+            text = digit,
+            fontSize = 30.sp,
             color = MaterialTheme.colors.surface
         )
     }

@@ -1,24 +1,27 @@
-package ru.dromanryuk.notes.feature_note.presentation.password.components
+package ru.dromanryuk.notes.feature_note.presentation.password.commonPassword.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.dromanryuk.notes.feature_note.presentation.password.model.PasswordButtonType
-import ru.dromanryuk.notes.feature_note.presentation.password.model.generateButtonsMatrix
+import ru.dromanryuk.notes.core.UiComponentVisibility
+import ru.dromanryuk.notes.feature_note.presentation.password.biometric.BiometricLoginDialog
+import ru.dromanryuk.notes.feature_note.presentation.password.commonPassword.model.PasswordButtonType
+import ru.dromanryuk.notes.feature_note.presentation.password.commonPassword.model.PasswordState
 
 @Composable
 fun PasswordInputButtons(
-    buttons: List<List<PasswordButtonType>>,
+    state: PasswordState,
     onPasswordChanged: (String) -> Unit,
     onCleanPressed: () -> Unit,
     onFingerprintLogin: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onFingerprintClick: (UiComponentVisibility) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -26,8 +29,14 @@ fun PasswordInputButtons(
             .padding(10.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
+        var showBiometricLoginDialog by remember { mutableStateOf(false) }
+        if (state.fingerprintDialogVisibility == UiComponentVisibility.Show) {
+            showBiometricLoginDialog = true
+        } else if (state.fingerprintDialogVisibility == UiComponentVisibility.Hide) {
+            showBiometricLoginDialog = false
+        }
         Column() {
-            buttons.forEach {
+            state.buttons.forEach {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(25.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -55,7 +64,7 @@ fun PasswordInputButtons(
                                     icon = Icons.Filled.Fingerprint,
                                     modifier = Modifier.size(70.dp)
                                 ) {
-                                    onFingerprintLogin()
+                                    onFingerprintClick(UiComponentVisibility.Show)
                                 }
                             }
                             is PasswordButtonType.Clear -> {
@@ -71,6 +80,13 @@ fun PasswordInputButtons(
                 }
             }
         }
+        if (showBiometricLoginDialog)
+            BiometricLoginDialog(
+                onSuccess = { onFingerprintLogin() },
+                onDismiss = {
+                    onFingerprintClick(UiComponentVisibility.Hide)
+                }
+            )
     }
 }
 
@@ -78,7 +94,6 @@ fun PasswordInputButtons(
 @Preview
 fun PreviewPasswordInputButtons() {
     PasswordInputButtons(
-        generateButtonsMatrix(PasswordButtonType.Fingerprint),
-        {}, {}, {}, {}
+        PasswordState(), {}, {}, {}, {}, {}
     )
 }

@@ -1,4 +1,4 @@
-package ru.dromanryuk.notes.feature_note.presentation.password.model
+package ru.dromanryuk.notes.feature_note.presentation.password.commonPassword.model
 
 sealed class PasswordButtonType {
     data class NumberButton(val digit: Int) : PasswordButtonType()

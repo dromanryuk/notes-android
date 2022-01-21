@@ -95,4 +95,6 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:2.38.1"
 
     implementation 'com.itextpdf:itextg:5.5.10'
+
+    implementation "androidx.biometric:biometric:1.1.0"
 }

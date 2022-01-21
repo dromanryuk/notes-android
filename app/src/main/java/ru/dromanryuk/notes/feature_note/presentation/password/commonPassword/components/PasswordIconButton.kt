@@ -1,4 +1,4 @@
-package ru.dromanryuk.notes.feature_note.presentation.password.components
+package ru.dromanryuk.notes.feature_note.presentation.password.commonPassword.components
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
