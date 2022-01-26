@@ -7,11 +7,13 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import ru.dromanryuk.notes.core.UiComponentVisibility
 import ru.dromanryuk.notes.feature_note.domain.model.*
 import ru.dromanryuk.notes.feature_note.domain.use_case.UpdateCheckboxUseCase
 import ru.dromanryuk.notes.feature_note.domain.use_case.UpdateNoteUseCase
 import ru.dromanryuk.notes.feature_note.presentation.note.model.*
+import ru.dromanryuk.notes.feature_note.presentation.note.model.NoteDialogs.*
+import ru.dromanryuk.notes.feature_notification.model.changeDialogVisibility
+import ru.dromanryuk.notes.feature_notification.model.changeMenuVisibility
 import javax.inject.Inject
 
 @HiltViewModel
@@ -99,15 +101,13 @@ class NoteViewModel @Inject constructor(
                     ModalBottomSheetAction.CopyNote -> {
                     }
                     ModalBottomSheetAction.DeleteNote -> removeNote()
-                    ModalBottomSheetAction.ShareNote -> {
-                        sendUpdateShareDialogVisibility()
-                    }
+                    ModalBottomSheetAction.ShareNote -> updateNoteDialogState(SHARE, true)
                 }
-            is NoteEditingEvent.UpdateShareDialogVisibility -> {
-                _state.update { it.copy(shareDialogVisibility = event.visibility) }
+            is NoteEditingEvent.UpdateDialogVisibility -> {
+                updateNoteDialogState(event.dialog, event.visibility)
             }
-            is NoteEditingEvent.UpdateRemovePasswordDialogVisibility -> {
-                _state.update { it.copy(removePasswordDialogVisibility = event.visibility) }
+            is NoteEditingEvent.UpdateNotificationDialogMenuVisibility -> {
+                _state.update { it.copy(notificationDialogVisibility = it.notificationDialogVisibility.changeMenuVisibility(event.type, event.newVal))}
             }
             NoteEditingEvent.AddCheckbox -> addCheckbox()
             NoteEditingEvent.ExitScreen -> {
@@ -148,14 +148,6 @@ class NoteViewModel @Inject constructor(
         }
         val title = _state.value.titleState
         return useCases.shareNoteUseCase(content, title)
-    }
-
-    private fun sendUpdateShareDialogVisibility() {
-        sendEvent(NoteEditingEvent.UpdateShareDialogVisibility(UiComponentVisibility.Show))
-    }
-
-    private fun sendUpdateRemoveNotePasswordDialogVisibility() {
-        sendEvent(NoteEditingEvent.UpdateRemovePasswordDialogVisibility(UiComponentVisibility.Show))
     }
 
     private fun checkNoteFilling(state: NoteState): Boolean {
@@ -211,6 +203,14 @@ class NoteViewModel @Inject constructor(
                     isFavourite = favouriteState
                 )
             )
+        }
+    }
+
+    private fun updateNoteDialogState(dialog: NoteDialogs, visibility: Boolean) {
+        when(dialog) {
+            SHARE -> _state.update { it.copy(shareDialogVisible = visibility) }
+            REMOVE_PASSWORD -> _state.update { it.copy(removePasswordDialogVisible = visibility) }
+            NOTIFICATION -> _state.update { it.copy(notificationDialogVisibility = it.notificationDialogVisibility.changeDialogVisibility(visibility))}
         }
     }
 

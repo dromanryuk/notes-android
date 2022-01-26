@@ -10,10 +10,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 fun DefaultIconButton(
     image: ImageVector,
     color: Color,
-    function: () -> Unit
+    onClick: () -> Unit
 ) {
     IconButton(
-        onClick = function
+        onClick = onClick
     ) {
         Icon(
             imageVector = image,

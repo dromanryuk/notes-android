@@ -11,7 +11,8 @@ data class NoteState(
     val editingDateTime: String? = "",
     val isExitFromScreen: Boolean = false,
     val isNavigateToPasswordScreen: Boolean = false,
-    val shareDialogVisibility: UiComponentVisibility = UiComponentVisibility.Hide,
-    val removePasswordDialogVisibility: UiComponentVisibility = UiComponentVisibility.Hide,
+    val shareDialogVisible: Boolean = false,
+    val removePasswordDialogVisible: Boolean = false,
+    val notificationDialogVisibility: NotificationDialogState = NotificationDialogState(),
     val shareState: NoteShareType = NoteShareType.Text
 )

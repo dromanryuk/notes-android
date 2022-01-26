@@ -10,9 +10,8 @@ sealed class NoteEditingEvent {
 
     data class AdditionalActions(val action: ModalBottomSheetAction) : NoteEditingEvent()
 
-    data class UpdateShareDialogVisibility(val visibility: UiComponentVisibility) : NoteEditingEvent()
-
-    data class UpdateRemovePasswordDialogVisibility(val visibility: UiComponentVisibility) : NoteEditingEvent()
+    data class UpdateDialogVisibility(val dialog: NoteDialogs, val visibility: Boolean) : NoteEditingEvent()
+    data class UpdateNotificationDialogMenuVisibility(val type: DropdownType, val newVal: Boolean) : NoteEditingEvent()
 
     object AddCheckbox : NoteEditingEvent()
 
@@ -25,4 +24,8 @@ sealed class NoteEditingEvent {
     object RemoveNotePassword : NoteEditingEvent()
 
     object ExitScreen: NoteEditingEvent()
+}
+
+enum class NoteDialogs {
+    SHARE, REMOVE_PASSWORD, NOTIFICATION
 }

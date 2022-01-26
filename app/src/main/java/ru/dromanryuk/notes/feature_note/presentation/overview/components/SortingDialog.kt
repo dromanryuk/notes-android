@@ -2,17 +2,15 @@ package ru.dromanryuk.notes.feature_note.presentation.overview.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.dromanryuk.notes.feature_note.domain.filter.NoteSortingType
 import ru.dromanryuk.notes.feature_note.presentation.components.DefaultRadioButton
 import ru.dromanryuk.notes.feature_note.presentation.components.DefaultDialog
+import ru.dromanryuk.notes.feature_note.presentation.components.DefaultDialogTitle
 import ru.dromanryuk.notes.ui.theme.NotesTheme
 
 @Composable
@@ -44,13 +42,7 @@ private fun SortingDialogContent(
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text(
-            text = "Сортировать по",
-            color = MaterialTheme.colors.surface,
-            maxLines = 1,
-            fontSize = 20.sp,
-            overflow = TextOverflow.Ellipsis
-        )
+        DefaultDialogTitle("Сортировать по", 20.sp)
         SortingOptionGroup(
             sortingType = sortingType,
             onOptionSelected = {
